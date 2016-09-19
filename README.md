@@ -8,6 +8,7 @@ To learn more on how to use Live Update [review this tutorial](https://mobilefir
 ## Installation
 Add this plug-in in the same way that you add any other Cordova plug-in to your application.  
 For example, with the Cordova CLI type: `cordova plugin add cordova-plugin-mfp-liveupdate`.
+(or `cordova plugin add http://github.com/mfpdev/mfp-live-update-cordova-plugin` to get latest).
 
 As this plugin depends on cordova-plugin-mfp, it will automatically download it too in case your Cordova application does not have it already.
 
