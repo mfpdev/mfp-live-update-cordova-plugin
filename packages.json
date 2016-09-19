@@ -1,0 +1,38 @@
+{
+  "name": "cordova-plugin-mfp-liveupdate",
+  "version": "8.0.0-SNAPSHOT",
+  "description": "IBM Mobile First LiveUpdate Cordova Plugin",
+  "cordova": {
+    "id": "cordova-plugin-mfp-liveupdate",
+    "platforms": [
+      "android",
+      "ios",
+      "ubuntu"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.ibm.com/MobileFirst/mfp-live-update-cordova-plugin"
+  },
+  "keywords": [
+    "cordova",
+    "mfp",
+    "mobilefirst",
+    "ecosystem:mfp",
+    "cordova-android",
+    "cordova-ios"
+  ],
+
+  "engines": {
+    "cordovaDependencies": {
+      "8.0.0": {
+        "cordova": ">=3.1.0",
+        "cordova-android": ">=5.1.1",
+        "cordova-ios":">=4.1.1"
+      }
+    }
+  },
+  "author": "IBM corp.",
+  "license": "SEE LICENSE IN LICENSE.TXT"
+
+}
