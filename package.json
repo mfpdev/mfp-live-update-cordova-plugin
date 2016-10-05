@@ -13,6 +13,9 @@
     "type": "git",
     "url": "http://github.com/mfpdev/mfp-live-update-cordova-plugin"
   },
+  "bugs": {
+    "url": "http://github.com/mfpdev/mfp-live-update-cordova-plugin/issues"
+  },
   "keywords": [
     "cordova",
     "mfp",
@@ -24,17 +27,18 @@
     "cordova-android",
     "cordova-ios"
   ],
-
   "engines": {
     "cordovaDependencies": {
       "8.0.0": {
         "cordova": ">=3.1.0",
         "cordova-android": ">=5.1.1",
-        "cordova-ios":">=4.1.1"
+        "cordova-ios": ">=4.1.1"
       }
     }
   },
+  "dependencies": {
+    "cordova-plugin-mfp": ">=8.0.0"
+  },
   "author": "IBM corp.",
-  "license": "See license in LICENSE.TXT"
-
+  "license": "SEE LICENSE IN LICENSE.TXT"
 }

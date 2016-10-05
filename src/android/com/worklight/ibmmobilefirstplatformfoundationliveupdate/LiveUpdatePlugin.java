@@ -62,10 +62,11 @@ public class LiveUpdatePlugin extends CordovaPlugin {
                 // if the user sent non-JSON object , the parser will throw an exception
                 JSONObject actionParams = new JSONObject(firstParam);
                 LOG.d("execute", "json parameters are:" + actionParams.toString());
-                final String segmentId = actionParams.optString(SEG_PARAM_KEY, null);
+                String segmentId = actionParams.optString(SEG_PARAM_KEY, null);
                 final Boolean useClientCache = actionParams.optBoolean(CACHE_PARAM_KEY, true); // cache will be enabled by default
                 final JSONObject params = actionParams.optJSONObject(PARAMETERS_PARAM_KEY);
                 if (segmentId != null) {
+		    segmentId = java.net.URLEncoder.encode(segmentId, "UTF-8");
                     // If the user supplied segment ID, we'll use it and ignore the params.
                     getBySegmentId(callbackContext, segmentId, useClientCache);
                 } else {
