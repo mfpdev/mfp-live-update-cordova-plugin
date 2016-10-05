@@ -36,9 +36,6 @@
       }
     }
   },
-  "dependencies": {
-    "cordova-plugin-mfp": ">=8.0.0"
-  },
   "author": "IBM corp.",
   "license": "SEE LICENSE IN LICENSE.TXT"
 }
