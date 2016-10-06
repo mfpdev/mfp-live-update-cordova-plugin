@@ -1,5 +1,5 @@
 # IBM MobileFirst Foundation Live Update SDK plug-in
-To add IBM MobileFirst Foundation Live Update capabilities to an existing Cordova app, you add the `cordova-plugin-mfp-liveupdate` plug-in to your app.
+To add IBM MobileFirst Foundation Live Update capabilities to an existing Cordova application, you add the `cordova-plugin-mfp-liveupdate` plug-in to your application.
 
 The Live Update Cordova plug-in lets you query runtime configuration properties and features which you set in the Live Update Settings screen in the MobileFirst Operations Console. With Live Update integrated in your application you can implement feature toggling, A/B testing, feature segmentation and more.
 
@@ -7,10 +7,14 @@ To learn more on how to use Live Update [review this tutorial](https://mobilefir
 
 ## Installation
 Add this plug-in in the same way that you add any other Cordova plug-in to your application.  
-For example, with the Cordova CLI type: `cordova plugin add cordova-plugin-mfp-liveupdate`.
+For example, with the Cordova CLI type: 
+`cordova create MyNewPRoject com.mycompany.name
+cd MyNewPRoject
+cordova plugin add cordova-plugin-mfp-liveupdate@latest
+cordova platform add android`
 (or `cordova plugin add http://github.com/mfpdev/mfp-live-update-cordova-plugin` to get latest).
 
-As this plugin depends on cordova-plugin-mfp, it will automatically download it too in case your Cordova application does not have it already.
+As this plugin depends on cordova-plugin-mfp logger, it will automatically download it too in case your Cordova application does not have it already.
 
 ## Supported platforms
 - Android v4.1 and above
