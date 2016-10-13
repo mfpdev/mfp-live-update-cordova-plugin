@@ -28,7 +28,7 @@ limitations under the License.
     </js-module>
 
     <!--     uncomment this when the native repositiories will be updated:      -->
-    <hook type="before_platform_add" src="scripts/getNativeSources.js" />
+    <hook type="after_plugin_add" src="scripts/getNativeSources.js" />
 
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">

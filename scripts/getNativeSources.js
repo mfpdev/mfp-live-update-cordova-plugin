@@ -30,17 +30,19 @@ module.exports = function (context) {
 
     var pluginBaseDir = context.opts.plugin.dir;
 
-    if (context.opts.cordova.platforms.indexOf('android') >= 0) {
+    // download android in anycase to support case when user calls `cordova platform add` then `cordova plugin add` and also in reverse order
+    //if (context.opts.cordova.platforms.indexOf('android') >= 0) {
         // there is an android platform in this application
         console.log("Copying native Live Update Android SDK from github.");
         downloadAll(pluginBaseDir, androidBaseUrl, 'android', androidFilesToCopy);
-    }
+    //}
 
-    if (context.opts.cordova.platforms.indexOf('ios') >= 0) {
+    // download ios in anycase to support case when user calls `cordova platform add` then `cordova plugin add` and also in reverse order
+    //if (context.opts.cordova.platforms.indexOf('ios') >= 0) {
         // there is an iOS platform in this application
         console.log("Copying native Live Update iOS SDK from github.");
         downloadAll(pluginBaseDir, iosBaseUrl, 'ios', iosFilesToCopy);
-    }
+    //}
 
 }
 
