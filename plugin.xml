@@ -27,8 +27,9 @@ limitations under the License.
         <clobbers target="LiveUpdateManager"/>
     </js-module>
 
-    <!--     uncomment this when the native repositiories will be updated:      -->
+    <!-- copy ios and android native SDK sources into the cordova folders -->
     <hook type="after_plugin_add" src="scripts/getNativeSources.js" />
+    <hook type="after_platform_add" src="scripts/getNativeSources.js" />
 
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
