@@ -43,6 +43,7 @@ function downloadAll(pluginBaseDir, baseUrl, platform, fileList) {
     fileList.forEach(function (filename) {
         var fileOnDisk = pluginBaseDir + '/src/' + platform + '/' + filename;
         var url = baseUrl + filename;
+        console.log('copying '+ url + ' to '+  fileOnDisk)
         makeFolder(fileOnDisk);
         downloadFile(url, fileOnDisk);
     });
@@ -52,12 +53,14 @@ function downloadAll(pluginBaseDir, baseUrl, platform, fileList) {
 function makeFolder(filePath) {
     var folder = path.dirname(filePath);
     if (!fs.existsSync(folder)) {
+        console.log('creating folder '+folder)
         fs.mkdirSync(folder);
     }
 }
 
 function downloadFile(url, destination) {
     var file = fs.createWriteStream(destination);
+    console.log('downloading '+url)
     var request = https.get(url, function (response) {
         response.pipe(file);
         response.on('error', function (e) {
