@@ -38,12 +38,17 @@ module.exports = function (context) {
     downloadAll(pluginBaseDir, androidBaseUrl, 'android', androidFilesToCopy);
     downloadAll(pluginBaseDir, iosBaseUrl, 'ios', iosFilesToCopy);
 
-    while (downloadReverseProgressBar >0) {
-      console.log('still waiting for '+downloadReverseProgressBar +  ' downloads')
-      //do nothing loop. CPU hungry
-    }
-    console.log("Finish downloading."+downloadReverseProgressBar);
+    sleep(5000);
+    console.log('Finish downloading ' + downloadReverseProgressBar + ' files');
 
+}
+
+function sleep(milliseconds)
+{
+    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < milliseconds) ;
 }
 
 function downloadAll(pluginBaseDir, baseUrl, platform, fileList) {
@@ -79,6 +84,4 @@ function downloadFile(url, destination) {
         });
 
     });
-
-    console.log(' downloaded '+downloadReverseProgressBar--);
 }
