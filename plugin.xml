@@ -28,8 +28,8 @@ limitations under the License.
     </js-module>
 
     <!-- copy ios and android native SDK sources into the cordova folders -->
-    <hook type="before_plugin_add" src="scripts/getNativeSources.js" />
-    <hook type="after_platform_add" src="scripts/getNativeSources.js" />
+    <hook type="before_plugin_install" src="scripts/getNativeSources.js" />
+    <hook type="before_platform_install" src="scripts/getNativeSources.js" />
 
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
