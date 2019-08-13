@@ -1,6 +1,5 @@
-declare module LiveUpdate {
-
-    /**
+declare module LiveUpdateManager {
+  /**
     * Retrieves MFP server configuration for given parameters.
     * This API should be called after Corodova was loaded (i.e. onDeviceReady() event).
     * Recommended place in MFP is wlCommonInit() method.
@@ -20,6 +19,9 @@ declare module LiveUpdate {
     *
     * @methodOf LiveUpdatePluin#
     */
-    function getConfiguration(liveUpdateParams: Object , success: Function, failure: Function): void;
-
+  function obtainConfiguration(
+    liveUpdateParams: Object,
+    success: Function,
+    failure: Function
+  ): void;
 }

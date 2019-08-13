@@ -9,16 +9,16 @@
 import Foundation
 
 class LocalCache {
-    private static let lock = NSLock()
+    fileprivate static let lock = NSLock()
     
-    static func getConfiguration(configurationId: String) -> Configuration? {
+    static func getConfiguration(_ configurationId: String) -> Configuration? {
         lock.lock()
         defer {lock.unlock()}
         
         return CacheFileManager.isExpired(configurationId) ? nil : CacheFileManager.configuration(configurationId)
     }
     
-    static func saveConfiguration(configuration: Configuration) {
+    static func saveConfiguration(_ configuration: Configuration) {
         lock.lock()
         defer {lock.unlock()}
         

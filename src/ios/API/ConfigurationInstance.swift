@@ -24,26 +24,26 @@
 import Foundation
 
 class ConfigurationInstance: Configuration {
-    private var _data: [String: AnyObject]
-    private var _id : String
+    fileprivate var _data: [String: AnyObject]
+    fileprivate var _id : String
     
     init(id: String, data: [String: AnyObject]) {
         _data = data
         _id = id
     }
     
-    func isFeatureEnabled (featureId: String)->Bool? {
-        if let features = _data["data"]!["features"]!, feature =  features[featureId] as? Bool{
-            return feature
-        }
-        return nil
+    func isFeatureEnabled (_ featureId: String)->Bool? {
+        let responseData = _data["data"]!;
+        let features : [String:Any] = responseData["features"]! as! [String : Any];
+        let feature : Any = features[featureId] as Any;
+        return feature as? Bool;
     }
     
-    func getProperty (propertyId : String)->String? {
-        if let properties = _data["data"]!["properties"]!, property = properties[propertyId] as? String{
-            return property
-        }
-        return nil
+    func getProperty (_ propertyId : String)->String? {
+        let responseData = _data["data"]!;
+        let properties : [String:Any] = responseData["properties"]! as! [String : Any];
+        let property : Any = properties[propertyId] as Any;
+        return property as? String;
     }
     
     var id: String {

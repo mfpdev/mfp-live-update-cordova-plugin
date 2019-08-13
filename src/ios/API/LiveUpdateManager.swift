@@ -24,14 +24,34 @@
 
 import Foundation
 import IBMMobileFirstPlatformFoundation
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
 
-public class LiveUpdateManager {
-    private let serviceURL: String = "adapters/liveUpdateAdapter/configuration"
-    private let configurationScope : String = "configuration-user-login"
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
+
+open class LiveUpdateManager {
+    fileprivate let serviceURL: String = "adapters/liveUpdateAdapter/configuration"
+    fileprivate let configurationScope : String = "configuration-user-login"
     
     public static let sharedInstance = LiveUpdateManager()
     
-    private init() {
+    fileprivate init() {
     }
     
     /**
@@ -43,11 +63,11 @@ public class LiveUpdateManager {
      
      - Parameter completionHandler - the competition for retrieving the Configuration
      */
-    public func obtainConfiguration (segment: String!, useCache: Bool = true, completionHandler: (configuration: Configuration?, error: NSError?) -> Void) {
+    open func obtainConfiguration (_ segment: String!, useCache: Bool = true, completionHandler: @escaping (_ configuration: Configuration?, _ error: NSError?) -> Void) {
         let encodedSegment = ecodeString(segment)
-        let url = NSURL(string: serviceURL.stringByAppendingString("/\(encodedSegment!)"))!
+        let url = URL(string: serviceURL + "/\(encodedSegment!)")!
         
-        OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: segment = \(segment), useCache = \(useCache), url = \(url)")
+        OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: segment = \(String(describing: segment)), useCache = \(useCache), url = \(url)")
         self.obtainConfiguration(segment, url: url, params: nil, useCache: useCache, completionHandler: completionHandler)
         
         
@@ -62,8 +82,8 @@ public class LiveUpdateManager {
      
      - Parameter completionHandler - the competition for retrieving the Configuration
      */
-    public func obtainConfiguration (params: [String:String], useCache: Bool = true, completionHandler: (configuration: Configuration?, error: NSError?) -> Void) {
-        let url = NSURL(string: serviceURL)!
+    open func obtainConfiguration (_ params: [String:String], useCache: Bool = true, completionHandler: @escaping (_ configuration: Configuration?, _ error: NSError?) -> Void) {
+        let url = URL(string: serviceURL)!
         let id = buildIDFromParams(params)
        
     
@@ -73,34 +93,34 @@ public class LiveUpdateManager {
     }
     
     
-    private func obtainConfiguration (id : String, url: NSURL, params: [String: String]?, useCache: Bool, completionHandler: (configuration: Configuration?, error: NSError?) -> Void) {
-        if let cachedConfig = LocalCache.getConfiguration(id) where useCache == true {
+    fileprivate func obtainConfiguration (_ id : String, url: URL, params: [String: String]?, useCache: Bool, completionHandler: @escaping (_ configuration: Configuration?, _ error: NSError?) -> Void) {
+        if let cachedConfig = LocalCache.getConfiguration(id) , useCache == true {
             // Get cached configuration
             OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: Retrieved cached configuration. configuration = \(cachedConfig)")
-            completionHandler(configuration: cachedConfig, error: nil)
+            completionHandler(cachedConfig, nil)
         } else {
             sendConfigRequest(id, url: url, params: params) { configuration, error in
-                OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: Retrieving new configuration from server. configuration = \(configuration)")
-                completionHandler(configuration: configuration, error: error)
+                OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: Retrieving new configuration from server. configuration = \(String(describing: configuration))")
+                completionHandler(configuration, error)
             }
         }
     }
     
-    private func sendConfigRequest(id: String, url:NSURL, params: [String: String]?, completionHandler: (Configuration?, NSError?) -> Void) {
-        let configurationServiceRequest = WLResourceRequest (URL: url, method: WLHttpMethodGet, scope: configurationScope)
+    fileprivate func sendConfigRequest(_ id: String, url:URL, params: [String: String]?, completionHandler: @escaping (Configuration?, NSError?) -> Void) {
+        let configurationServiceRequest = WLResourceRequest (url: url, method: WLHttpMethodGet, scope: configurationScope)
         
-        OCLogger.getLogger().logTraceWithMessages("sendConfigRequest: id = \(id), url = \(url), params = \(params)")
+        OCLogger.getLogger().logTraceWithMessages("sendConfigRequest: id = \(id), url = \(url), params = \(String(describing: params))")
         
         if params != nil {
             for (paramName, paramValue) in params! {
-                configurationServiceRequest.setQueryParameterValue(paramValue, forName: paramName)
+                configurationServiceRequest?.setQueryParameterValue(paramValue, forName: paramName)
             }
         }
-        configurationServiceRequest.sendWithCompletionHandler { wlResponse, wlError in
+        configurationServiceRequest?.send { wlResponse, wlError in
             var configuration: Configuration? = nil
             
             if (wlError == nil) {
-                var json = wlResponse.responseJSON as? [String: AnyObject]
+                var json = wlResponse?.responseJSON as? [String: AnyObject]
                 
                 if json == nil {
                     OCLogger.getLogger().logFatalWithMessages("sendConfigRequest: invalid JSON response")
@@ -109,17 +129,17 @@ public class LiveUpdateManager {
                 configuration = ConfigurationInstance(id :id, data: json!)
                 // Save to cache
                 
-                OCLogger.getLogger().logTraceWithMessages("sendConfigRequest: saving configuration to cache. configuration = \(configuration)")
+                OCLogger.getLogger().logTraceWithMessages("sendConfigRequest: saving configuration to cache. configuration = \(String(describing: configuration))")
                 LocalCache.saveConfiguration(configuration!)
             } else {
-                OCLogger.getLogger().logFatalWithMessages("sendConfigRequest: error while retriving configuration from server. error = \(wlError)")
+                OCLogger.getLogger().logFatalWithMessages("sendConfigRequest: error while retriving configuration from server. error = \(String(describing: wlError))")
             }
-            completionHandler(configuration, wlError)
+            completionHandler(configuration, wlError as NSError?)
         }
     }
     
-    private func buildIDFromParams (params: [String: String]?)->String {
-        OCLogger.getLogger().logTraceWithMessages("buildIDFromParams: params = \(params)")
+    fileprivate func buildIDFromParams (_ params: [String: String]?)->String {
+        OCLogger.getLogger().logTraceWithMessages("buildIDFromParams: params = \(String(describing: params))")
         var paramsId = ""
         if (params?.count > 0) {
             for (paramName, paramValue) in params! {
@@ -130,7 +150,7 @@ public class LiveUpdateManager {
         return paramsId
     }
     
-    private func ecodeString(path: String?) -> String? {
-        return path?.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())
+    fileprivate func ecodeString(_ path: String?) -> String? {
+        return path?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlHostAllowed)
     }
 }
