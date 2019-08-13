@@ -1,4 +1,4 @@
-declare module LiveUpdate {
+declare module LiveUpdateManager {
 
     /**
     * Retrieves MFP server configuration for given parameters.
@@ -20,6 +20,6 @@ declare module LiveUpdate {
     *
     * @methodOf LiveUpdatePluin#
     */
-    function getConfiguration(liveUpdateParams: Object , success: Function, failure: Function): void;
+    function obtainConfiguration(liveUpdateParams: Object , success: Function, failure: Function): void;
 
 }
