@@ -33,7 +33,7 @@
             let useClientCache = configuration.value(forKey: "useClientCache") as? Bool ?? true
             let params = configuration.value(forKey: "params") as? [String:String] ?? [String:String]()
 
-            if (segmentId != "" && params.isEmpty){
+            if (params.isEmpty){
                 getConfigurationWithSegmentId(segmentId, useClientCache: useClientCache, command: command)
             } else {
                 getConfigurationWithParams(params, useClientCache: useClientCache, command: command)

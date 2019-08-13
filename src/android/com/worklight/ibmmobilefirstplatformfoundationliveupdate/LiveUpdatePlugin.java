@@ -65,7 +65,7 @@ public class LiveUpdatePlugin extends CordovaPlugin {
                 String segmentId = actionParams.optString(SEG_PARAM_KEY, "all");
                 final Boolean useClientCache = actionParams.optBoolean(CACHE_PARAM_KEY, true); // cache will be enabled by default
                 final JSONObject params = actionParams.optJSONObject(PARAMETERS_PARAM_KEY);
-                if (segmentId != null && params == null) {
+                if (params == null) {
                     segmentId = java.net.URLEncoder.encode(segmentId, "UTF-8");
                     // If the user supplied segment ID, we'll use it and ignore the params.
                     getBySegmentId(callbackContext, segmentId, useClientCache);
