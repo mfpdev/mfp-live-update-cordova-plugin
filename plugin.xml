@@ -60,8 +60,6 @@ limitations under the License.
         <source-file src="src/ios/Cache/LocalCache.swift"/>
         <source-file src="src/ios/Logger/OCLoggerSwiftExtension.swift"/>
         <header-file src="src/ios/LiveUpdate-Bridging-Header.h"/>
-<!--        <preference name="swift-version" value="4.2" />-->
-<!--        <preference name="UseLegacySwiftLanguageVersion" value="true" />-->
     </platform>
 
     <dependency id="cordova-plugin-mfp" version=">=8.0.0" />
