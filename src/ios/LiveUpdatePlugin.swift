@@ -24,44 +24,44 @@
 
      - Returns: A CDVPluginResult object with status and message.
      */
-    func getConfiguration (command: CDVInvokedUrlCommand){
+    @objc func getConfiguration (_ command: CDVInvokedUrlCommand){
         let actionName = "getConfiguration"
         if let configuration = command.arguments[0] as? NSDictionary{
             print("\(actionName): Configuration parameters are: \(configuration)")
 
-            let segmentId = configuration.valueForKey("segmentId") as? String ?? ""
-            let useClientCache = configuration.valueForKey("useClientCache") as? Bool ?? true
-            let params = configuration.valueForKey("params") as? [String:String] ?? [String:String]()
+            let segmentId = configuration.value(forKey: "segmentId") as? String ?? "all"
+            let useClientCache = configuration.value(forKey: "useClientCache") as? Bool ?? true
+            let params = configuration.value(forKey: "params") as? [String:String] ?? [String:String]()
 
-            if (segmentId != ""){
+            if (params.isEmpty){
                 getConfigurationWithSegmentId(segmentId, useClientCache: useClientCache, command: command)
             } else {
                 getConfigurationWithParams(params, useClientCache: useClientCache, command: command)
             }
         } else {
             print("\(actionName): Invalid arguments.")
-            self.commandDelegate!.sendPluginResult(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: "Invalid arguments."), callbackId: command.callbackId)
+            self.commandDelegate!.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Invalid arguments."), callbackId: command.callbackId)
         }
     }
 
-    func getConfigurationWithSegmentId(segmentId: String, useClientCache: Bool, command: CDVInvokedUrlCommand){
+    func getConfigurationWithSegmentId(_ segmentId: String, useClientCache: Bool, command: CDVInvokedUrlCommand){
         LiveUpdateManager.sharedInstance.obtainConfiguration(segmentId, useCache: useClientCache, completionHandler: completionHandler("getConfigurationWithSegmentId", command: command))
     }
 
-    func getConfigurationWithParams(params: [String:String], useClientCache: Bool, command: CDVInvokedUrlCommand){
+    func getConfigurationWithParams(_ params: [String:String], useClientCache: Bool, command: CDVInvokedUrlCommand){
         LiveUpdateManager.sharedInstance.obtainConfiguration(params, useCache: useClientCache, completionHandler: completionHandler("getConfigurationWithParams", command: command))
     }
 
-    func completionHandler(actionName: String, command: CDVInvokedUrlCommand) -> (configuration: Configuration?, error: NSError?) -> Void {
-        func ch (configuration: Configuration?, error: NSError?) -> Void {
+    func completionHandler(_ actionName: String, command: CDVInvokedUrlCommand) -> (_ configuration: Configuration?, _ error: NSError?) -> Void {
+        func ch (_ configuration: Configuration?, error: NSError?) -> Void {
             if (error == nil){
                 let configurationInstance = configuration as! ConfigurationInstance
-                print("\(actionName): obtainConfiguration success with data: \(configurationInstance.data["data"])")
-                self.commandDelegate!.sendPluginResult(CDVPluginResult(status: CDVCommandStatus_OK, messageAsDictionary:configurationInstance.data["data"] as! [NSObject:AnyObject]), callbackId: command.callbackId)
+                print("\(actionName): obtainConfiguration success with data: \(String(describing: configurationInstance.data["data"]))")
+                self.commandDelegate!.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs:configurationInstance.data["data"] as? [AnyHashable: Any]), callbackId: command.callbackId)
             } else {
-                let failResponse: [String:AnyObject] = ["errorMsg":error!.localizedDescription]
+                let failResponse: [String:AnyObject] = ["errorMsg":error!.localizedDescription as AnyObject]
                 print("\(actionName): obtainConfiguration with error: \(failResponse)")
-                self.commandDelegate!.sendPluginResult(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsDictionary: failResponse), callbackId: command.callbackId)
+                self.commandDelegate!.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: failResponse), callbackId: command.callbackId)
             }
         }
         return ch

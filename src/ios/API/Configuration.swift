@@ -33,7 +33,7 @@ public protocol Configuration {
      
      - Returns: true if feature is enabled or nil for non existing feature.
      */
-    func isFeatureEnabled (featureId : String)->Bool?
+    func isFeatureEnabled (_ featureId : String)->Bool?
     
     /**
      Get value of a property
@@ -42,5 +42,5 @@ public protocol Configuration {
      
      - Returns: the value for the given propertyId, or nil in case the property doesn't exist
      */
-    func getProperty (propertyId : String)->String?
+    func getProperty (_ propertyId : String)->String?
 }
