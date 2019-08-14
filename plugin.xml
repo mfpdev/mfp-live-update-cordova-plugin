@@ -62,5 +62,5 @@ limitations under the License.
         <header-file src="src/ios/LiveUpdate-Bridging-Header.h"/>
     </platform>
 
-    <dependency id="cordova-plugin-mfp" version=">=8.0.0" />
+    <dependency id="cordova-plugin-mfp" version=">=8.0.201908141700" />
 </plugin>
