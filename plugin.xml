@@ -14,7 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-mfp-liveupdate" version="8.0.2019081617">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-mfp-liveupdate" version="8.0.2019081917">
     <name>IBM MobileFirst Platform Foundation LiveUpdate</name>
     <description>MFP LiveUpdate Cordova Plugin</description>
     <license>IBM</license>
