@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-mfp-liveupdate",
-  "version": "8.0.2019081617",
+  "version": "8.0.2019081917",
   "description": "IBM Mobile First LiveUpdate Cordova Plugin",
   "cordova": {
     "id": "cordova-plugin-mfp-liveupdate",
