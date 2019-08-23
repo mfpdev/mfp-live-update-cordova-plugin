@@ -27,6 +27,18 @@ limitations under the License.
         <clobbers target="LiveUpdateManager"/>
     </js-module>
 
+    <platform name="browser">
+        <config-file target="config.xml" parent="/*">
+            <feature name="LiveUpdatePlugin">
+                <param name="browser-package" value="LiveUpdatePlugin" />
+            </feature> 
+        </config-file>
+
+         <js-module src="src/browser/LiveUpdatePlugin.js" name="LiveUpdatePlugin">
+            <runs />
+        </js-module>
+    </platform>
+
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="LiveUpdatePlugin">
