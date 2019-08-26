@@ -14,7 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-mfp-liveupdate" version="8.0.2019081918">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-mfp-liveupdate" version="8.0.2019082618">
     <name>IBM MobileFirst Platform Foundation LiveUpdate</name>
     <description>MFP LiveUpdate Cordova Plugin</description>
     <license>IBM</license>
@@ -26,6 +26,18 @@ limitations under the License.
     <js-module src="www/LiveUpdate.js" name="LiveUpdate">
         <clobbers target="LiveUpdateManager"/>
     </js-module>
+
+    <platform name="browser">
+        <config-file target="config.xml" parent="/*">
+            <feature name="LiveUpdatePlugin">
+                <param name="browser-package" value="LiveUpdatePlugin" />
+            </feature> 
+        </config-file>
+
+         <js-module src="src/browser/LiveUpdatePlugin.js" name="LiveUpdatePlugin">
+            <runs />
+        </js-module>
+    </platform>
 
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">

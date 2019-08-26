@@ -26,7 +26,7 @@ var manager = {
     cordova.exec(
       successCallback, // success callback function
       errorCallback, // error callback function
-      NATIVE_CLASS_NAME, // Maps to Java/Swift Class
+      NATIVE_CLASS_NAME, // Maps to Java/Swift/Java Script Class
       "getConfiguration", // action name
       [options]
     );
