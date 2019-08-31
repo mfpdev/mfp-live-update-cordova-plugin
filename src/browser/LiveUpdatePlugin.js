@@ -1,5 +1,7 @@
 function getConfiguration(success,error,options) {
-  error({"errorMsg" : "Live Update is not supported in browser or preview mode"});
+  setTimeout(()=>{
+    error({"errorMsg" : "Live Update is not supported in browser or preview mode"});
+  },1000)
 }
 
 module.exports = {
