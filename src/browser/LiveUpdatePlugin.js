@@ -25,13 +25,12 @@ function buildIDFromParams(params) {
   return paramsId
 }
 
-function configurationInstance(data, id) {
+function configurationInstance(id, data) {
   var data = data;
   var id = id;
   
   this.isFeatureEnabled = function (featureId) {
-    let responseData = data["data"];
-    let features = responseData["features"];
+    let features = data["features"];
     if (!isEmpty(features[featureId])) {
       let feature = features[featureId];
       return feature;
@@ -40,8 +39,7 @@ function configurationInstance(data, id) {
   }
 
   this.getProperty = function (propertyId) {
-    let responseData = data["data"];
-    let properties = responseData["properties"];
+    let properties = data["properties"];
     if (!isEmpty(properties[propertyId])) {
       let property = properties[propertyId];
       return property;
@@ -51,7 +49,6 @@ function configurationInstance(data, id) {
 
   this.data = data;
   this.id = id;
-  this.description = data.description;
 };
 
 function sendConfigRequest(id, url, params) {
@@ -72,7 +69,7 @@ function sendConfigRequest(id, url, params) {
             // OCLogger.getLogger().logFatalWithMessages("sendConfigRequest: invalid JSON response")
             json = {};
         }
-        let configuration = new configurationInstance(id, json);
+        let configuration = new configurationInstance(id, json["data"]);
         resolve(configuration);
       },
       (error) => {
@@ -93,8 +90,8 @@ function obtainConfiguration(id, url, params, useCache, success, error) {
       (configuration) => {
         success(configuration);
        // OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: Retrieving new configuration from server. configuration = \(String(describing: configuration))")
-      }, (error) => {
-        error(error);
+      }, (er) => {
+        error(er);
       // OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: Retrieving new configuration from server. configuration = \(String(describing: configuration))")
       });
   }
@@ -130,4 +127,3 @@ module.exports = {
 }
 
 require('cordova/exec/proxy').add('LiveUpdatePlugin', module.exports);
-
