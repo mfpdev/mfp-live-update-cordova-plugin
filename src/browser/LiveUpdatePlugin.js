@@ -8,7 +8,12 @@ var __LocalCache = function () {
   // .................... Private methods ...........................
 
   function __isExpired(configuration) {
-    return false;
+    if(typeof configuration !== "undefined" &&  typeof configuration['data'] !== "undefined" && typeof configuration.data['expiresAt'] !== "undefined") {
+      var currentTime = Date.now();
+      var expireTime = Date.parse(configuration.data.expiresAt);
+      return expireTime < currentTime;
+    }
+    return true;
   }
 
   // .................... Public methods ...........................
