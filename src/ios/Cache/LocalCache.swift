@@ -12,7 +12,8 @@ class LocalCache {
     fileprivate static let lock = NSLock()
     
     static func getConfiguration(_ configurationId: String) -> Configuration? {
-      var url = WL.DAO.getItem('com.mfp.authorization.url');
+        lock.lock()
+        defer {lock.unlock()}
         
         return CacheFileManager.isExpired(configurationId) ? nil : CacheFileManager.configuration(configurationId)
     }
