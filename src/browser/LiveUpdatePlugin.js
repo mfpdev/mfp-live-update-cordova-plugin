@@ -1,6 +1,6 @@
 const serviceURL = "adapters/liveUpdateAdapter/configuration";
 const configurationScope = "configuration-user-login";
-//const logger = WL.Logger.create({pkg: 'MFPLiveUpdate'});
+let logger;
 
 var __LocalCache = function () {
   var LIVEUPDATE_KEY = 'com.mfp.liveupdate.';
@@ -41,7 +41,7 @@ function __isEmpty(obj) {
 }
 
 function __buildIDFromParams(params) {
-  //OCLogger.getLogger().logTraceWithMessages("__buildIDFromParams: params = \(String(describing: params))")
+  logger.trace('MFPLiveupdatePlugin', "__buildIDFromParams: params = " + JSON.stringify(params) );
   var paramsId = "";
   if (!__isEmpty(params)) {
     for (var key in params) {
@@ -51,7 +51,7 @@ function __buildIDFromParams(params) {
       }
     }
   }
-  //OCLogger.getLogger().logTraceWithMessages("__buildIDFromParams: paramsId = \(paramsId)")
+  logger.trace('MFPLiveupdatePlugin', "__buildIDFromParams: paramsId = " + paramsId );
   return paramsId
 }
 
@@ -84,7 +84,8 @@ function __configurationInstance(id, data) {
 function __sendConfigRequest(id, url, params) {
   return new Promise((resolve, reject) => {
     var configurationServiceRequest = new WLResourceRequest(url, WLResourceRequest.GET, { scope: configurationScope });
-    //OCLogger.getLogger().logTraceWithMessages("__sendConfigRequest: id = \(id), url = \(url), params = \(String(describing: params))")
+    logger.trace('MFPLiveupdatePlugin',"__sendConfigRequest: id = " + id + ", url = " + url + ", params = " + JSON.stringify(params) );
+    
     if (!__isEmpty(params)) {
       for (var key in params) {
         if (params.hasOwnProperty(key)) {
@@ -96,7 +97,7 @@ function __sendConfigRequest(id, url, params) {
       (response) => {
         var json = response.responseJSON;
         if (typeof json === "undefined") {
-          // OCLogger.getLogger().logFatalWithMessages("__sendConfigRequest: invalid JSON response")
+          logger.fatal('MFPLiveupdatePlugin', "__sendConfigRequest: invalid JSON response");
           json = {};
         }
         var data = json["data"];
@@ -106,7 +107,7 @@ function __sendConfigRequest(id, url, params) {
         resolve(configuration);
       },
       (error) => {
-        // OCLogger.getLogger().logFatalWithMessages("__sendConfigRequest: error while retriving configuration from server. error = \(String(describing: wlError))")
+        logger.fatal('MFPLiveupdatePlugin', "__sendConfigRequest: error while retriving configuration from server. error = " + JSON.stringify(error));
         reject(error);
       }
     );
@@ -116,16 +117,16 @@ function __sendConfigRequest(id, url, params) {
 function __obtainConfiguration(id, url, params, useCache, success, error) {
   if (WLLiveupdateCache.getConfiguration(id) && useCache) {
     const cachedConfig = WLLiveupdateCache.getConfiguration(id);
-    // OCLogger.getLogger().logDebugWithMessages("__obtainConfiguration: Retrieved cached configuration. configuration = \(cachedConfig)");
+    logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: Retrieved cached configuration. configuration = " + JSON.stringify(cachedConfig));
     success(cachedConfig);
   } else {
     __sendConfigRequest(id, url, params).then(
       (configuration) => {
         success(configuration);
-        // OCLogger.getLogger().logDebugWithMessages("__obtainConfiguration: Retrieving new configuration from server. configuration = \(String(describing: configuration))")
+        logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: Retrieving new configuration from server. configuration = " + JSON.stringify(cachedConfig));
       }, (er) => {
         error(er);
-        // OCLogger.getLogger().logDebugWithMessages("__obtainConfiguration: Retrieving new configuration from server. configuration = \(String(describing: configuration))")
+        logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: Error in Retrieving configuration from server. Error = " + JSON.stringify(er));
       });
   }
 }
@@ -133,18 +134,19 @@ function __obtainConfiguration(id, url, params, useCache, success, error) {
 function __getConfigurationWithSegmentId(segmentId, useClientCache, success, error) {
   const encodedSegment = encodeURI(segmentId);;
   const url = serviceURL + "/" + encodedSegment;
-  //OCLogger.getLogger().logDebugWithMessages("__obtainConfiguration: segment = \(String(describing: segment)), useCache = \(useCache), url = \(url)")
+  logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: segment = " + segmentId + ", useCache = " + useClientCache + ", url = " + url);
   __obtainConfiguration(segmentId, url, {}, useClientCache, success, error);
 }
 
 function __getConfigurationWithParams(params, useClientCache, success, error) {
   const url = serviceURL;
   const id = __buildIDFromParams(params)
-  //OCLogger.getLogger().logDebugWithMessages("__obtainConfiguration: params = \(params), useCache = \(useCache), url = \(url)")
+  logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: params = " + JSON.stringify(params) + ", useCache = " + useClientCache + ", url = " + url);
   __obtainConfiguration(id, url, params, useClientCache, success, error);
 }
 
 function getConfiguration(success, error, options) {
+  logger = WL.Logger.create({pkg: 'com.mfp.liveupdate'});
   if (typeof options[0] !== "undefined") {
     options = options[0];
   }
