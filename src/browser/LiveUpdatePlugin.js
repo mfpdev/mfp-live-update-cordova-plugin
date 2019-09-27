@@ -8,9 +8,9 @@ var __LocalCache = function () {
   // .................... Private methods ...........................
 
   function __isExpired(configuration) {
-    if(configuration &&  typeof configuration['data'] !== "undefined" && typeof configuration.data['expiresAt'] !== "undefined") {
+    if(configuration &&  typeof configuration['expiresAt'] !== "undefined") {
       var currentTime = Date.now();
-      var expireTime = Date.parse(configuration.data.expiresAt);
+      var expireTime = Date.parse(configuration.expiresAt);
       return expireTime < currentTime;
     }
     return true;
@@ -56,11 +56,12 @@ function __buildIDFromParams(params) {
 }
 
 function __configurationInstance(id, data) {
-  var data = data;
   var id = id;
+  var features = data["features"];
+  var properties = data["properties"];
+  var expiresAt = data["expiresAt"];
 
   this.isFeatureEnabled = function (featureId) {
-    let features = data["features"];
     if (!__isEmpty(features[featureId])) {
       let feature = features[featureId];
       return feature;
@@ -69,7 +70,6 @@ function __configurationInstance(id, data) {
   }
 
   this.getProperty = function (propertyId) {
-    let properties = data["properties"];
     if (!__isEmpty(properties[propertyId])) {
       let property = properties[propertyId];
       return property;
@@ -77,8 +77,10 @@ function __configurationInstance(id, data) {
     return null;
   }
 
-  this.data = data;
   this.id = id;
+  this.features = data["features"];
+  this.properties = data["properties"];
+  this.expiresAt = data["expiresAt"];
 };
 
 function __sendConfigRequest(id, url, params) {
