@@ -8,7 +8,7 @@ var __LocalCache = function () {
   // .................... Private methods ...........................
 
   function __isExpired(configuration) {
-    if(typeof configuration !== "undefined" &&  typeof configuration['data'] !== "undefined" && typeof configuration.data['expiresAt'] !== "undefined") {
+    if(configuration &&  typeof configuration['data'] !== "undefined" && typeof configuration.data['expiresAt'] !== "undefined") {
       var currentTime = Date.now();
       var expireTime = Date.parse(configuration.data.expiresAt);
       return expireTime < currentTime;
@@ -41,7 +41,7 @@ function __isEmpty(obj) {
 }
 
 function __buildIDFromParams(params) {
-  logger.trace('MFPLiveupdatePlugin', "__buildIDFromParams: params = " + JSON.stringify(params) );
+  logger.trace('trace', "__buildIDFromParams: params = " + JSON.stringify(params) );
   var paramsId = "";
   if (!__isEmpty(params)) {
     for (var key in params) {
@@ -51,7 +51,7 @@ function __buildIDFromParams(params) {
       }
     }
   }
-  logger.trace('MFPLiveupdatePlugin', "__buildIDFromParams: paramsId = " + paramsId );
+  logger.trace('trace', "__buildIDFromParams: paramsId = " + paramsId );
   return paramsId
 }
 
@@ -84,7 +84,7 @@ function __configurationInstance(id, data) {
 function __sendConfigRequest(id, url, params) {
   return new Promise((resolve, reject) => {
     var configurationServiceRequest = new WLResourceRequest(url, WLResourceRequest.GET, { scope: configurationScope });
-    logger.trace('MFPLiveupdatePlugin',"__sendConfigRequest: id = " + id + ", url = " + url + ", params = " + JSON.stringify(params) );
+    logger.trace('trace',"__sendConfigRequest: id = " + id + ", url = " + url + ", params = " + JSON.stringify(params) );
     
     if (!__isEmpty(params)) {
       for (var key in params) {
@@ -97,7 +97,7 @@ function __sendConfigRequest(id, url, params) {
       (response) => {
         var json = response.responseJSON;
         if (typeof json === "undefined") {
-          logger.fatal('MFPLiveupdatePlugin', "__sendConfigRequest: invalid JSON response");
+          logger.fatal('fatal', "__sendConfigRequest: invalid JSON response");
           json = {};
         }
         var data = json["data"];
@@ -107,7 +107,7 @@ function __sendConfigRequest(id, url, params) {
         resolve(configuration);
       },
       (error) => {
-        logger.fatal('MFPLiveupdatePlugin', "__sendConfigRequest: error while retriving configuration from server. error = " + JSON.stringify(error));
+        logger.fatal('fatal', "__sendConfigRequest: error while retriving configuration from server. error = " + JSON.stringify(error));
         reject(error);
       }
     );
@@ -117,16 +117,16 @@ function __sendConfigRequest(id, url, params) {
 function __obtainConfiguration(id, url, params, useCache, success, error) {
   if (WLLiveupdateCache.getConfiguration(id) && useCache) {
     const cachedConfig = WLLiveupdateCache.getConfiguration(id);
-    logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: Retrieved cached configuration. configuration = " + JSON.stringify(cachedConfig));
+    logger.debug('debug', "__obtainConfiguration: Retrieved cached configuration. configuration = " + JSON.stringify(cachedConfig));
     success(cachedConfig);
   } else {
     __sendConfigRequest(id, url, params).then(
       (configuration) => {
         success(configuration);
-        logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: Retrieving new configuration from server. configuration = " + JSON.stringify(cachedConfig));
+        logger.debug('debug', "__obtainConfiguration: Retrieving new configuration from server. configuration = " + JSON.stringify(configuration));
       }, (er) => {
         error(er);
-        logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: Error in Retrieving configuration from server. Error = " + JSON.stringify(er));
+        logger.debug('debug', "__obtainConfiguration: Error in Retrieving configuration from server. Error = " + JSON.stringify(er));
       });
   }
 }
@@ -134,14 +134,14 @@ function __obtainConfiguration(id, url, params, useCache, success, error) {
 function __getConfigurationWithSegmentId(segmentId, useClientCache, success, error) {
   const encodedSegment = encodeURI(segmentId);;
   const url = serviceURL + "/" + encodedSegment;
-  logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: segment = " + segmentId + ", useCache = " + useClientCache + ", url = " + url);
+  logger.debug('debug', "__obtainConfiguration: segment = " + segmentId + ", useCache = " + useClientCache + ", url = " + url);
   __obtainConfiguration(segmentId, url, {}, useClientCache, success, error);
 }
 
 function __getConfigurationWithParams(params, useClientCache, success, error) {
   const url = serviceURL;
   const id = __buildIDFromParams(params)
-  logger.debug('MFPLiveupdatePlugin', "__obtainConfiguration: params = " + JSON.stringify(params) + ", useCache = " + useClientCache + ", url = " + url);
+  logger.debug('debug', "__obtainConfiguration: params = " + JSON.stringify(params) + ", useCache = " + useClientCache + ", url = " + url);
   __obtainConfiguration(id, url, params, useClientCache, success, error);
 }
 
