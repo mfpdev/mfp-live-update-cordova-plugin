@@ -21,6 +21,7 @@ As this plugin depends on cordova-plugin-mfp logger, it will automatically downl
 ## Supported platforms
 - Android v4.1 and above
 - iOS v8.0 and above
+- Browser
 
 ## Configuration In MobileFirst Operation Console
 1. Download and deploy the Live Update adapter as [instructed in the tutorial](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/using-the-mfpf-sdk/live-update/#adding-live-update-to-mobilefirst-server).
