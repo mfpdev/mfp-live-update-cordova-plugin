@@ -59,6 +59,27 @@ open class LiveUpdateManager {
             serviceURL = "/mfpliveupdate/v1/\(bundleID)/configuration"
     }
     }
+
+    /**
+     Obtains a configuration from server / cache
+     
+     - Parameter useCache - default is true, use false to explicitly obtain the configuration from the configuration adapter
+     
+     - Parameter completionHandler - the competition for retrieving the Configuration
+     */
+    open func obtainConfiguration (useCache: Bool = true, completionHandler: @escaping (_ configuration: Configuration?, _ error: NSError?) -> Void) {
+        let encodedSegment = ecodeString("all")
+        let urlString = applicationRoute +  serviceURL + "/\(encodedSegment!)"
+        if isValidUrl(url: urlString) {
+            let url = URL(string: urlString)!
+        OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: segment = \(String(describing: "all")), useCache = \(useCache), url = \(url)")
+        self.obtainConfiguration("all", url: url, params: nil, useCache: useCache, completionHandler: completionHandler)
+        } else {
+            let error = "Failed to initialize Liveupdate instance because server url is nil. Check the server details in mfpclient.plist"
+            OCLogger.getLogger().logDebugWithMessages(error)
+            completionHandler(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : error]))
+    }
+    }
     
     /**
      Obtains a configuration from server / cache by a segment id
