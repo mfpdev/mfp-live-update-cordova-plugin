@@ -46,12 +46,39 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 
 open class LiveUpdateManager {
-    fileprivate let serviceURL: String = "adapters/liveUpdateAdapter/configuration"
-    fileprivate let configurationScope : String = "configuration-user-login"
+    fileprivate let bundleID : String = Bundle.main.bundleIdentifier!
+    fileprivate let liveupdateClientScope : String = "liveupdate.mobileclient"
+    fileprivate var applicationRoute: String = "";
+    fileprivate var serviceURL: String = ""
     
     public static let sharedInstance = LiveUpdateManager()
     
     fileprivate init() {
+        if let url = WLClient.init().serverUrl() {
+            applicationRoute = url.absoluteString.replacingOccurrences(of: url.relativePath, with: "")
+            serviceURL = "/mfpliveupdate/v1/\(bundleID)/configuration"
+    }
+    }
+
+    /**
+     Obtains a configuration from server / cache
+     
+     - Parameter useCache - default is true, use false to explicitly obtain the configuration from the configuration adapter
+     
+     - Parameter completionHandler - the competition for retrieving the Configuration
+     */
+    open func obtainConfiguration (useCache: Bool = true, completionHandler: @escaping (_ configuration: Configuration?, _ error: NSError?) -> Void) {
+        let encodedSegment = ecodeString("all")
+        let urlString = applicationRoute +  serviceURL + "/\(encodedSegment!)"
+        if isValidUrl(url: urlString) {
+            let url = URL(string: urlString)!
+        OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: segment = \(String(describing: "all")), useCache = \(useCache), url = \(url)")
+        self.obtainConfiguration("all", url: url, params: nil, useCache: useCache, completionHandler: completionHandler)
+        } else {
+            let error = "Failed to initialize Liveupdate instance because server url is nil. Check the server details in mfpclient.plist"
+            OCLogger.getLogger().logDebugWithMessages(error)
+            completionHandler(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : error]))
+    }
     }
     
     /**
@@ -65,12 +92,16 @@ open class LiveUpdateManager {
      */
     open func obtainConfiguration (_ segment: String!, useCache: Bool = true, completionHandler: @escaping (_ configuration: Configuration?, _ error: NSError?) -> Void) {
         let encodedSegment = ecodeString(segment)
-        let url = URL(string: serviceURL + "/\(encodedSegment!)")!
-        
+        let urlString = applicationRoute +  serviceURL + "/\(encodedSegment!)"
+        if isValidUrl(url: urlString) {
+            let url = URL(string: urlString)!
         OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: segment = \(String(describing: segment)), useCache = \(useCache), url = \(url)")
         self.obtainConfiguration(segment, url: url, params: nil, useCache: useCache, completionHandler: completionHandler)
-        
-        
+        } else {
+            let error = "Failed to initialize Liveupdate instance because server url is nil. Check the server details in mfpclient.plist"
+            OCLogger.getLogger().logDebugWithMessages(error)
+            completionHandler(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : error]))
+    }
     }
     
     /**
@@ -83,13 +114,17 @@ open class LiveUpdateManager {
      - Parameter completionHandler - the competition for retrieving the Configuration
      */
     open func obtainConfiguration (_ params: [String:String], useCache: Bool = true, completionHandler: @escaping (_ configuration: Configuration?, _ error: NSError?) -> Void) {
-        let url = URL(string: serviceURL)!
+        let urlString = applicationRoute + bundleID + serviceURL
+        if isValidUrl(url: urlString) {
+            let url = URL(string: urlString)!
         let id = buildIDFromParams(params)
-       
-    
-        
         OCLogger.getLogger().logDebugWithMessages("obtainConfiguration: params = \(params), useCache = \(useCache), url = \(url)")
         self.obtainConfiguration(id, url: url, params: params, useCache: useCache, completionHandler: completionHandler)
+        } else {
+            let error = "Failed to initialize Liveupdate instance because server url is nil. Check the server details in mfpclient.plist"
+            OCLogger.getLogger().logDebugWithMessages(error)
+            completionHandler(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : error]))
+        }
     }
     
     
@@ -107,7 +142,7 @@ open class LiveUpdateManager {
     }
     
     fileprivate func sendConfigRequest(_ id: String, url:URL, params: [String: String]?, completionHandler: @escaping (Configuration?, NSError?) -> Void) {
-        let configurationServiceRequest = WLResourceRequest (url: url, method: WLHttpMethodGet, scope: configurationScope)
+        let configurationServiceRequest = WLResourceRequest (url: url, method: WLHttpMethodGet, scope: liveupdateClientScope)
         
         OCLogger.getLogger().logTraceWithMessages("sendConfigRequest: id = \(id), url = \(url), params = \(String(describing: params))")
         
@@ -152,5 +187,12 @@ open class LiveUpdateManager {
     
     fileprivate func ecodeString(_ path: String?) -> String? {
         return path?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlHostAllowed)
+    }
+    
+    fileprivate func isValidUrl(url: String) -> Bool {
+        let urlRegEx = "http[s]?://(([^/:.[:space:]]+(.[^/:.[:space:]]+)*)|([0-9](.[0-9]{3})))(:[0-9]+)?((/[^?#[:space:]]+)([^#[:space:]]+)?(#.+)?)?"
+        let urlTest = NSPredicate(format:"SELF MATCHES %@", urlRegEx)
+        let result = urlTest.evaluate(with: url)
+        return result
     }
 }

@@ -15,10 +15,14 @@
  */
 package com.worklight.ibmmobilefirstplatformfoundationliveupdate;
 
+import android.content.Context;
+import android.webkit.URLUtil;
+
 import com.worklight.common.Logger;
 import com.worklight.ibmmobilefirstplatformfoundationliveupdate.api.Configuration;
 import com.worklight.ibmmobilefirstplatformfoundationliveupdate.api.ConfigurationListener;
 import com.worklight.ibmmobilefirstplatformfoundationliveupdate.cache.LocalCache;
+import com.worklight.wlclient.api.WLClient;
 import com.worklight.wlclient.api.WLFailResponse;
 import com.worklight.wlclient.api.WLResourceRequest;
 import com.worklight.wlclient.api.WLResponse;
@@ -27,6 +31,7 @@ import com.worklight.wlclient.api.WLResponseListener;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Map;
 
 /**
@@ -40,20 +45,59 @@ import java.util.Map;
 
 public class LiveUpdateManager {
 
-    private static LiveUpdateManager instance = new LiveUpdateManager();
-    private final static String CONFIGURATION_SCOPE = "configuration-user-login";
-    private final String SERVICE_URL = "adapters/liveUpdateAdapter/configuration";
+    private static LiveUpdateManager instance = null;
+    private final static String LIVEUPDATE_CLIENT_SCOPE = "liveupdate.mobileclient";
+    private String SERVICE_URL;
+
 
     private static final Logger logger = Logger.getInstance(LiveUpdateManager.class.getName());
     /**
      * getInstance
+     *
+     * @param context Android {@link Context}
      * @return LiveUpdateManager singleton instance
      */
-    public static LiveUpdateManager getInstance() {
+    public static synchronized LiveUpdateManager getInstance(Context context) {
+        if (instance == null) {
+            instance = new LiveUpdateManager(context);
+        }
         return instance;
     }
 
-    private LiveUpdateManager() {
+    private LiveUpdateManager(Context context) {
+        try {
+            WLClient client = null;
+            // Get the applicationId and backend route from core
+            try {
+                client = WLClient.getInstance();
+            } catch (Exception e) {
+                client = WLClient.createInstance(context);
+            }
+            URL url = client.getServerUrl();
+            StringBuilder routeBuilder = new StringBuilder();
+            routeBuilder.append(url.getProtocol());
+            routeBuilder.append("://");
+            routeBuilder.append(url.getHost());
+            int port = url.getPort();
+            if(port != -1) {
+                routeBuilder.append(":");
+                routeBuilder.append(port);
+            }
+            String urlPath = url.getPath();
+            String[] split = urlPath.split("/api");
+            String contextRoute = urlPath.substring(0, split[0].lastIndexOf( "/" ));
+            routeBuilder.append(contextRoute);
+
+            String applicationRoute = routeBuilder.toString();
+            String packageName = context.getPackageName();
+            SERVICE_URL =  applicationRoute + "/mfpliveupdate/v1/" + packageName + "/configuration";
+            if (!URLUtil.isValidUrl(SERVICE_URL)) {
+                throw new RuntimeException("LiveUpdateManager:initialize() - An error occured while initializing Liveupdate service. Reason : Invalid HOST URL");
+            }
+        } catch (Exception e) {
+            logger.error("LiveUpdateManager:initialize() - An error occured while initializing Liveupdate service.");
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -78,6 +122,20 @@ public class LiveUpdateManager {
      */
     public void obtainConfiguration (Map<String,String> params, ConfigurationListener configurationListener) {
         this.obtainConfiguration(params, true, configurationListener);
+    }
+
+
+    /**
+     * obtainConfiguration - obtains a configuration from server / cache
+     * @param useCache - true to use cache, false to always obtains from server
+     * @param configurationListener - the configuration listener for receiving the configuration
+     */
+    public void obtainConfiguration (boolean useCache, ConfigurationListener configurationListener) {
+        URI url = URI.create(SERVICE_URL + "/all");
+
+
+        logger.debug("obtainConfiguration: useCache = " + useCache + ", url = " + url);
+        this.obtainConfiguration("all", url, null, useCache, configurationListener);
     }
 
     /**
@@ -122,7 +180,7 @@ public class LiveUpdateManager {
 
 
     private void sendConfigRequest(final String id, URI url, Map<String,String> params, final ConfigurationListener configurationListener) {
-        WLResourceRequest configurationServiceRequest = new WLResourceRequest(url, WLResourceRequest.GET, CONFIGURATION_SCOPE);
+        WLResourceRequest configurationServiceRequest = new WLResourceRequest(url, WLResourceRequest.GET, LIVEUPDATE_CLIENT_SCOPE);
 
         logger.trace("sendConfigRequest: id = " + id + ", url = " + url + "params = " + params);
 

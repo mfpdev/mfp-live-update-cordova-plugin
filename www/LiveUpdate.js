@@ -17,9 +17,10 @@
 var NATIVE_CLASS_NAME = "LiveUpdatePlugin";
 
 /**
- * @param segmentId - the segement to look for.
+ * @param useClientCache -  true (default) tells the native iOS/Android code if we want to cache the result of the calls . cache expiratrion
+ * is set in the MFP admin console.
  * @param map - this map (as JSON Array) is convered to query params to be analyzed by the Live Update Resolver API
- * for example: var liveUpdateParams = { segmentId :'18' ,useClientCache : true };
+ * for example: var liveUpdateParams = { useClientCache : true };
  */
 var manager = {
   obtainConfiguration: function(options, successCallback, errorCallback) {

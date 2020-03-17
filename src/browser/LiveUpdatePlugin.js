@@ -1,5 +1,5 @@
-const serviceURL = "adapters/liveUpdateAdapter/configuration";
-const configurationScope = "configuration-user-login";
+const liveupdateMobileScope = "liveupdate.mobileclient";
+var serviceURL;
 let logger;
 
 var __LocalCache = function () {
@@ -85,7 +85,7 @@ function __configurationInstance(id, data) {
 
 function __sendConfigRequest(id, url, params) {
   return new Promise((resolve, reject) => {
-    var configurationServiceRequest = new WLResourceRequest(url, WLResourceRequest.GET, { scope: configurationScope });
+    var configurationServiceRequest = new WLResourceRequest(url, WLResourceRequest.GET, { scope: liveupdateMobileScope });
     logger.trace('trace',"__sendConfigRequest: id = " + id + ", url = " + url + ", params = " + JSON.stringify(params) );
     
     if (!__isEmpty(params)) {
@@ -155,6 +155,8 @@ function getConfiguration(success, error, options) {
   const segmentId = (typeof options['segmentId'] !== "undefined") ? options['segmentId'] : 'all';
   const useClientCache = (typeof options['useClientCache'] !== "undefined" && typeof options['useClientCache'] === "boolean") ? options['useClientCache'] : true;
   const params = (typeof options['params'] !== "undefined") ? options['segmentId'] : {};
+  const applicationId = typeof wlInitOptions.applicationId !== 'undefined' ? wlInitOptions.applicationId : null;
+  serviceURL = "mfpliveupdate/v1/" + applicationId + "/configuration";
   if (__isEmpty(params)) {
     __getConfigurationWithSegmentId(segmentId, useClientCache, success, error);
   } else {

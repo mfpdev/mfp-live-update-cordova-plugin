@@ -96,7 +96,7 @@ public class LiveUpdatePlugin extends CordovaPlugin {
     }
 
     private void getBySegmentId(final CallbackContext callbackContext, String segmentId, Boolean useClientCache) {
-        LiveUpdateManager.getInstance().obtainConfiguration(segmentId, useClientCache, new PluginConfigurationListener(callbackContext));
+        LiveUpdateManager.getInstance(this.cordova.getActivity().getApplicationContext()).obtainConfiguration(segmentId, useClientCache, new PluginConfigurationListener(callbackContext));
     }
 
     private void getByMap(final CallbackContext callbackContext, JSONObject params, Boolean useClientCache) {
@@ -110,7 +110,7 @@ public class LiveUpdatePlugin extends CordovaPlugin {
             }
         }
         LOG.d("getByMap", "map size:"+map.size());
-        LiveUpdateManager.getInstance().obtainConfiguration(map, useClientCache, new PluginConfigurationListener(callbackContext));
+        LiveUpdateManager.getInstance(this.cordova.getActivity().getApplicationContext()).obtainConfiguration(map, useClientCache, new PluginConfigurationListener(callbackContext));
     }
 
 
